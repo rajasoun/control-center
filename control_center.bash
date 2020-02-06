@@ -58,10 +58,11 @@ function copy_keys(){
 
 function _docker_compose() {
   if [[ "$(os)" == "windows" ]]; then
-     realdocker="$(which -a docker-compose | grep -v "$(readlink -f "$0")" | head -1)"
+    realdocker="$(which -a docker-compose | grep -v "$(readlink -f "$0")" | head -1)"
     export MSYS_NO_PATHCONV=1 MSYS2_ARG_CONV_EXCL="*"
     printf "%s\0" "$@" > /tmp/args.txt
-    winpty bash -c "xargs -0a /tmp/args.txt '$realdocker' '$@'"
+    winpty bash -c "xargs -0a /tmp/args.txt '$realdocker'"
+    return 0
   fi
   docker-compose $@
 }
