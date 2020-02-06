@@ -29,7 +29,7 @@ function os(){
 function verify_ansible_connection() {
   #CMD="ansible-inventory  -i /inventory/hosts  --list "
   CMD="ansible -i /inventory/hosts -m ping all"
-  
+
   verify=$(CMD="$OPTS $CMD" MSYS_NO_PATHCONV=1 docker-compose -f "$CONTROL_CENTER_COMPOSE_FILE" run --rm service)
   case "$verify" in
     *SUCCESS*)
@@ -57,13 +57,13 @@ function copy_keys(){
 }
 
 function _docker_compose() {
-  realdocker="$(which -a docker-compose | head -1)"
   if [[ "$(os)" == "windows" ]]; then
+     realdocker="$(which -a docker-compose | grep -v "$(readlink -f "$0")" | head -1)"
     export MSYS_NO_PATHCONV=1 MSYS2_ARG_CONV_EXCL="*"
     printf "%s\0" "$@" > /tmp/args.txt
     winpty bash -c "xargs -0a /tmp/args.txt '$realdocker' '$@'"
   fi
-  $realdocker $@
+  docker-compose $@
 }
 
 copy_keys
