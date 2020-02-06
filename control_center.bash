@@ -4,9 +4,9 @@ CONTROL_CENTER_COMPOSE_FILE="docker-compose.yml"
 OPTS="ANSIBLE_SCP_IF_SSH=TRUE ANSIBLE_CONFIG=/ansible/provision/ansible.cfg ANSIBLE_GATHERING=smart"
 ANSIBLE_OPTS="ansible_python_interpreter=/usr/bin/python3"
 
-verify_ansible_connection() {
+function verify_ansible_connection() {
   CMD="ansible-inventory  -i /inventory/hosts  --list "
-  verify=$(CMD="$OPTS $CMD" docker-compose -f "$CONTROL_CENTER_COMPOSE_FILE" run --rm service)
+  verify=$(CMD="$OPTS $CMD" MSYS_NO_PATHCONV=1 docker-compose -f "$CONTROL_CENTER_COMPOSE_FILE" run --rm service)
   case "$verify" in
     *SUCCESS*)
         echo "Connection SUCCESS :: Ansible Control Center -> VM ";;
@@ -16,17 +16,23 @@ verify_ansible_connection() {
   #echo "$verify"
 }
 
-configure_vm() {
+function configure_vm() {
   PLAYBOOK="/ansible/provision/playbook.yml"
   CMD="ansible-playbook  -i /inventory/hosts -e $ANSIBLE_OPTS -v $PLAYBOOK"
-  CMD="$OPTS $CMD --limit=all" docker-compose -f "$CONTROL_CENTER_COMPOSE_FILE" run --rm service
+  CMD="$OPTS $CMD --limit=all" MSYS_NO_PATHCONV=1 docker-compose -f "$CONTROL_CENTER_COMPOSE_FILE" run --rm service
 }
 
-control_center_shell() {
+function control_center_shell() {
   CMD="/bin/bash"
   CMD="$CMD" docker-compose -f "$CONTROL_CENTER_COMPOSE_FILE" run --rm service
 }
 
+#ToDo: Assumes Existence of MonoRepo :-)
+function copy_keys(){
+  rm -fr keys/* && cp ../multipass-dev-box/keys/multipass/id_rsa_bizapps* keys/
+}
+
+copy_keys
 verify_ansible_connection
 configure_vm
-#control_center_shell
+control_center_shell
