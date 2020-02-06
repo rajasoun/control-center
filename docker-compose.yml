@@ -1,0 +1,21 @@
+version: '3.7'
+
+services:
+  service:
+    container_name: ansible
+    build: docker
+    command: >
+      bash -c "/docker/provision.sh;${CMD}"
+    volumes:
+      - "${PWD}/keys:/keys"
+      - "${PWD}/ansible:/ansible"
+      - "${PWD}/docker:/docker"
+      - "${PWD}/inventory:/inventory"
+    environment:
+      - USER=ansible
+      - VM_USER=ubuntu
+      - VM_IP=192.168.64.8
+
+volumes:
+  service_data:
+
