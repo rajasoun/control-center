@@ -27,7 +27,9 @@ function os(){
 }
 
 function verify_ansible_connection() {
-  CMD="ansible-inventory  -i /inventory/hosts  --list "
+  #CMD="ansible-inventory  -i /inventory/hosts  --list "
+  CMD="ansible -i /inventory/hosts -m ping all"
+  
   verify=$(CMD="$OPTS $CMD" MSYS_NO_PATHCONV=1 docker-compose -f "$CONTROL_CENTER_COMPOSE_FILE" run --rm service)
   case "$verify" in
     *SUCCESS*)
